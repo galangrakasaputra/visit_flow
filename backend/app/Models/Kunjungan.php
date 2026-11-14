@@ -11,8 +11,7 @@ class Kunjungan extends Model
     protected $fillable = [
         'entitas_id',
         'user_id',
-        'tanggal_mulai',
-        'tanggal_akhir',
+        'visit_date',
         'status'
     ];
 

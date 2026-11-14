@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('entitas_id')->constrained('entitas')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_akhir');
+            $table->date('visit_date');
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

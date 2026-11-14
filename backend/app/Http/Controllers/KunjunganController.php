@@ -23,8 +23,7 @@ class KunjunganController extends Controller
         $validate = $request->validate([
             'entitas_id' => 'required|exists:entitas,id',
             'user_id' => 'required|exists:users,id',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_mulai',
+            'visit_date' => 'required|date',
         ]);
 
         $kunjungan = Kunjungan::create($validate);
@@ -38,8 +37,7 @@ class KunjunganController extends Controller
     {
         $validate = $request->validate([
             'entitas_id' => 'required|exists:entitas,id',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_mulai',
+            'visit_date' => 'required|date',
             'status' => 'required|boolean'
         ]);
 
@@ -82,6 +80,16 @@ class KunjunganController extends Controller
 
     public function search(Request $request)
     {
+        $validate = $request->validate([
+            'status' => 'nullable|boolean',
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_akhir' => 'nullable|date',
+            'name' => 'nullable|string',
+            'type' => 'nullable|string',
+            'segment' => 'nullable|string',
+            'region' => 'nullable|string',
+        ]);
+        
         $query = Kunjungan::query()
             ->where('user_id', $request->user()->id)
             ->with('entitas');
@@ -93,12 +101,12 @@ class KunjunganController extends Controller
 
         // Filter berdasarkan tanggal mulai
         if (isset($validate['tanggal_mulai'])) {
-            $query->whereDate('tanggal_mulai', $validate['tanggal_mulai']);
+            $query->whereDate('visit_date', $validate['tanggal_mulai']);
         }
 
         // Filter berdasarkan tanggal akhir
         if (isset($validate['tanggal_akhir'])) {
-            $query->whereDate('tanggal_akhir', $validate['tanggal_akhir']);
+            $query->whereDate('visit_date', $validate['tanggal_akhir']);
         }
 
         // Filter berdasarkan data entitas
