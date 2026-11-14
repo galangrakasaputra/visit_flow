@@ -19,4 +19,9 @@ class Kunjungan extends Model
     {
         return $this->belongsTo(Entitas::class, 'entitas_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

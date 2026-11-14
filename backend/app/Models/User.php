@@ -31,5 +31,8 @@ class User extends Authenticatable
         ];
     }
 
-
+    public function kunjungan()
+    {
+        return $this->hasMany(Kunjungan::class, 'user_id');
+    }
 }

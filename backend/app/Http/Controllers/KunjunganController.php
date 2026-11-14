@@ -14,22 +14,29 @@ class KunjunganController extends Controller
         ->get();
 
         return response()->json([
-            'data' => $kunjungan
+            'data' => $kunjungan,
+            'status' => 'success'
         ]);
     }
 
     public function store(Request $request)
     {
+        $user = $request->user();
+
         $validate = $request->validate([
             'entitas_id' => 'required|exists:entitas,id',
-            'user_id' => 'required|exists:users,id',
             'visit_date' => 'required|date',
         ]);
 
-        $kunjungan = Kunjungan::create($validate);
+        $kunjungan = Kunjungan::create([
+            'entitas_id' => $validate['entitas_id'],
+            'user_id' => $user->id,
+            'visit_date' => $validate['visit_date'],
+        ]);
 
         return response()->json([
-            'message' => "Kunjungan Berhasil Ditambahkan"
+            'message' => "Kunjungan Berhasil Ditambahkan",
+            'status' => 'success'
         ]);
     }
 
@@ -45,13 +52,15 @@ class KunjunganController extends Controller
 
         if(!$kunjungan){
             return response()->json([
-                'message' => "Kunjungan Tidak Ditemukan"
+                'message' => "Kunjungan Tidak Ditemukan",
+                'status' => 'error'
             ]);
         }else{
             $kunjungan->update($validate);
 
-            return response()->jxson([
-                'message' => "Kunjungan Berhasil Diupdate"
+            return response()->json([
+                'message' => "Kunjungan Berhasil Diupdate",
+                'status' => 'success'
             ]);
         }
 
@@ -67,13 +76,15 @@ class KunjunganController extends Controller
 
         if(!$kunjungan){
             return response()->json([
-                'message' => "Kunjungan Tidak Ditemukan"
+                'message' => "Kunjungan Tidak Ditemukan",
+                'status' => 'error'
             ]);
         }else{
             $kunjungan->update($validate);
 
             return response()->json([
-                'message' => "Status Kunjungan Diperbarui"
+                'message' => "Status Kunjungan Diperbarui",
+                'status' => 'error'
             ]);
         }
     }
@@ -101,37 +112,33 @@ class KunjunganController extends Controller
 
         // Filter berdasarkan tanggal mulai
         if (isset($validate['tanggal_mulai'])) {
-            $query->whereDate('visit_date', $validate['tanggal_mulai']);
+            $query->whereDate('visit_date', '>=', $validate['tanggal_mulai']);
         }
 
-        // Filter berdasarkan tanggal akhir
         if (isset($validate['tanggal_akhir'])) {
-            $query->whereDate('visit_date', $validate['tanggal_akhir']);
+            $query->whereDate('visit_date', '<=', $validate['tanggal_akhir']);
         }
 
         // Filter berdasarkan data entitas
         $query->whereHas('entitas', function ($q) use ($validate) {
             if (isset($validate['name'])) {
-                $q->where('name', 'like', '%' . $validate['name'] . '%');
-            }
-
-            if (isset($validate['type'])) {
-                $q->where('type', 'like', '%' . $validate['type'] . '%');
+                if (isset($validate['name'])) {
+                    $q->whereRaw('LOWER(name) LIKE ?', [
+                        '%' . strtolower($validate['name']) . '%'
+                    ]);
+                }
             }
 
             if (isset($validate['segment'])) {
                 $q->where('segment', 'like', '%' . $validate['segment'] . '%');
-            }
-
-            if (isset($validate['region'])) {
-                $q->where('region', 'like', '%' . $validate['region'] . '%');
             }
         });
 
         $kunjungan = $query->get();
 
         return response()->json([
-            'data' => $kunjungan
+            'data' => $kunjungan,
+            'status' => 'success'
         ]);
     }
 
@@ -143,5 +150,23 @@ class KunjunganController extends Controller
             'message' => 'Data Berhasil Diambil',
             'data' => $kunjungan
         ]);
+    }
+
+    public function delete(string $id){
+        $kunjungan = Kunjungan::find($id);
+
+        if(!$kunjungan){
+            return response()->json([
+                'message' => 'Kunjungan Tidak Ditemukan',
+                'status' => 'error'
+            ]);
+        }else{
+            $kunjungan->delete();
+
+            return response()->json([
+                'message' => "Kunjungan ke " . $kunjungan->entitas . "Di Tanggal " . $kunjungan->visit_date . " Berhasil Dihapus",
+                'status' => 'error'
+            ]);
+        }
     }
 }
