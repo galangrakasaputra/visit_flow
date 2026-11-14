@@ -16,6 +16,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/countEntitas', [EntitasController::class, 'countEntitas']);
+    Route::get('/countKunjungan', [KunjunganController::class, 'countKunjungan']);
     Route::resource('entitas', EntitasController::class);
     Route::get('/kunjungan', [KunjunganController::class, 'dataKunjungan']);
     Route::post('/kunjungan', [KunjunganController::class, 'store']);

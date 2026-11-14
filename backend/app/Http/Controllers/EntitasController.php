@@ -18,6 +18,16 @@ class EntitasController extends Controller
         ]);
     }
 
+    public function countEntitas(){
+        $entitas = Entitas::count();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data Berhasil Diambil',
+            'data' => $entitas
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -44,7 +54,8 @@ class EntitasController extends Controller
 
         if($exist){
             return response()->json([
-                'message' => 'Entitas sudah ada'
+                'message' => 'Entitas sudah ada',
+                'status' => 'error'
             ]);
         }else{
             $entitas = Entitas::create([
@@ -55,7 +66,8 @@ class EntitasController extends Controller
             ]);
 
             return response()->json([
-                'message' => "Entitas Berhasil Ditambahkan"
+                'message' => "Entitas Berhasil Ditambahkan",
+                'status' => 'success'
             ]);
         }
     }
@@ -92,7 +104,8 @@ class EntitasController extends Controller
 
         if(!$entitas){
             return response()->json([
-                'message' => 'Entitas Tidak Ada'
+                'message' => 'Entitas Tidak Ada',
+                'status' => 'error'
             ]);
         }
 
@@ -101,7 +114,8 @@ class EntitasController extends Controller
                 ->exists();
         if($exist){
             return response()->json([
-                'message' => 'Entitas Sudah Ada'
+                'message' => 'Entitas Sudah Ada',
+                'status' => 'error'
             ]);
         }else{
             $entitas->update([
@@ -112,7 +126,8 @@ class EntitasController extends Controller
             ]);
 
             return response()->json([
-                'message' => "Entitas " . $entitas->name . " Berhasil Diperbarui"
+                'message' => "Entitas " . $entitas->name . " Berhasil Diperbarui",
+                'status' => "success"
             ]);
         }
     }
@@ -126,13 +141,15 @@ class EntitasController extends Controller
 
         if(!$entitas){
             return response()->json([
-                'message' => "Entitas Tidak ada"
+                'message' => "Entitas Tidak ada",
+                'status' => 'error'
             ]);
         }else{
             $entitas->delete();
 
             return response()->json([
-                'message' => $entitas->name . " Berhasil Dihapus"
+                'message' => $entitas->name . " Berhasil Dihapus",
+                'status' => 'success'
             ]);
         }
     }

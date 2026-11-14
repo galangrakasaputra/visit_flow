@@ -50,7 +50,7 @@ class KunjunganController extends Controller
         }else{
             $kunjungan->update($validate);
 
-            return response()->json([
+            return response()->jxson([
                 'message' => "Kunjungan Berhasil Diupdate"
             ]);
         }
@@ -89,7 +89,7 @@ class KunjunganController extends Controller
             'segment' => 'nullable|string',
             'region' => 'nullable|string',
         ]);
-        
+
         $query = Kunjungan::query()
             ->where('user_id', $request->user()->id)
             ->with('entitas');
@@ -131,6 +131,16 @@ class KunjunganController extends Controller
         $kunjungan = $query->get();
 
         return response()->json([
+            'data' => $kunjungan
+        ]);
+    }
+
+    public function countKunjungan(){
+        $kunjungan = Kunjungan::count();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data Berhasil Diambil',
             'data' => $kunjungan
         ]);
     }

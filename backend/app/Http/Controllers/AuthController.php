@@ -15,16 +15,27 @@ class AuthController extends Controller
             'password' => 'required|string|min:8'
         ]);
 
-        $user = User::create([
-            'name' => $validate['name'],
-            'email' => $validate['email'],
-            'password' => bcrypt($validate['password'])
-        ]);
+        $exists = User::where('email', $validate['email'])->exists();
 
-        return response()->json([
-            'message' => 'Berhasil Membuat Akun',
-            'user' => $user
-        ]);
+        if($exists){
+            return response()->json([
+                'message' => 'Email Sudah Dipakai',
+                'status' => 'error'
+            ]);
+        }else{
+            $user = User::create([
+                'name' => $validate['name'],
+                'email' => $validate['email'],
+                'password' => bcrypt($validate['password'])
+            ]);
+
+            return response()->json([
+                'message' => 'Berhasil Membuat Akun',
+                'user' => $user,
+                'status' => 'success'
+            ]);
+        }
+
     }
 
     public function login(Request $request)
@@ -41,12 +52,14 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Berhasil Login',
                 'access_token' => $token,
-                'token_type' => 'Bearer'
+                'token_type' => 'Bearer',
+                'status' => 'success'
             ]);
         }
 
         return response()->json([
-            'message' => "Email atau Password Salah"
+            'message' => "Email atau Password Salah",
+            'status' => 'error'
         ]);
     }
 
@@ -55,7 +68,8 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => "Berhasil Logout"
+            'message' => "Berhasil Logout",
+            'status' => "success"
         ]);
     }
 
